@@ -15,7 +15,7 @@ const JobDetailsCardDisplay = ({ job, onClose, onCancel, showCancel, isChecked, 
 
   // Function to start chat
   const startChat = () => {
-    navigate(`/seekerchat/${job.seekerId}`); // Adjust as needed for route and ID structure
+    navigate(`/seekerchat/${job.jobId}`); // Adjust as needed for route and ID structure
   };
 
   // Create a portal for the modal

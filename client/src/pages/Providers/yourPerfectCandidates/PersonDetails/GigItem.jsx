@@ -29,7 +29,7 @@ function GigItem({ name, email, phone, address, city, jobId, seekerId, providerI
           <div className="flex items-center gap-3 text-2xl font-semibold text-orange-600">
             <BiChat className="text-5xl text-blue-600" />
             <Link 
-              to={`/providerchat/${seekerId}`} 
+              to={`/providerchat/${jobId}`} 
               className="text-xl text-blue-600 font-medium hover:underline"
             >
               Chat Now
