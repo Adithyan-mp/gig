@@ -8,13 +8,17 @@ function ChatPage({ participantName }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const navigate = useNavigate();
-  const socketRef = useRef(); // Create a ref to hold the socket instance
+  const socketRef = useRef();
 
   // Fetch messages from the server when the component mounts
   useEffect(() => {
     // Initialize socket connection
     socketRef.current = io("http://localhost:5001");
 
+    // Join conversation room
+    socketRef.current.emit("joinConversation", conversationId);
+
+    // Fetch previous messages from API
     const fetchMessages = async () => {
       try {
         const response = await axios.get(`/api/messages/${conversationId}`);
@@ -38,28 +42,27 @@ function ChatPage({ participantName }) {
       setMessages(prevMessages => [...prevMessages, message]);
     });
 
-    // Clean up the effect when the component unmounts
+    // Clean up on component unmount
     return () => {
-      socketRef.current.off('messageReceived');
-      socketRef.current.disconnect(); // Disconnect the socket here to clean up
+      socketRef.current.emit("leaveConversation", conversationId); // Leave room
+      socketRef.current.disconnect();
     };
   }, [conversationId]);
 
+  // Send message to server
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const messageData = {
         conversationId,
-        senderType: "seeker", // Indicate the message sender as "seeker"
-        text: newMessage, // Changed from 'content' to 'text'
-        timestamp: new Date().toISOString(), // Add timestamp for sorting
+        senderType: "seeker", // Adjust sender type as needed
+        text: newMessage,
+        timestamp: new Date().toISOString(),
       };
 
-      // Emit the new message to the server
-      if (socketRef.current) {
-        socketRef.current.emit('sendMessage', messageData);
-      }
-      setMessages((prevMessages) => [...prevMessages, messageData]); // Add the new message locally for immediate feedback
-      setNewMessage(""); // Clear the input field
+      // Emit new message
+      socketRef.current.emit('sendMessage', messageData);
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+      setNewMessage("");
     }
   };
 
@@ -80,11 +83,11 @@ function ChatPage({ participantName }) {
         {messages.map((msg, index) => (
           <div 
             key={index} 
-            className={`mb-4 flex ${msg.senderType === "seeker" ? "justify-end" : "justify-start"}`} // Adjust alignment based on sender type
+            className={`mb-4 flex ${msg.senderType === "seeker" ? "justify-end" : "justify-start"}`} // Adjust alignment
           >
-            <div className={`p-3 rounded-lg max-w-xs ${msg.senderType === "seeker" ? "bg-green-500 text-white" : "bg-blue-500 text-white"}`}>
+            <div className={`p-3 rounded-lg max-w-xs ${msg.senderType === "seeker" ? "bg-green-500 text-white" : "bg-gray-300 text-gray-900"}`}>
               <span className="block font-semibold">{msg.senderType === "seeker" ? "Seeker" : participantName}</span>
-              <p>{msg.text}</p> {/* Display the message text */}
+              <p>{msg.text}</p> {/* Display message text */}
             </div>
           </div>
         ))}
