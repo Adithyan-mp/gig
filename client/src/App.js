@@ -49,7 +49,7 @@ function App() {
           <Route path='/perfectcandidates/:id' element={<YourPerfectCandidates/>}/>
           <Route path='/perfectcandidates/:id/:jobId' element={<PerfectCandidatesDetails/>}/>
           <Route path='/providerchat/:id' element={<ProviderChat/>}/>
-          <Route path='/seekerchat/:id' element={<ProviderChat/>}/>
+          <Route path='/seekerchat/:id' element={<SeekerChat/>}/>
         </Routes>
       </BrowserRouter>
     </div>

@@ -6,6 +6,8 @@ const ProviderCollection = require('../models/providerCollectiondb');
 const SeekerCollection = require('../models/seekerCollectionsdb')
 const router = express.Router();
 
+const Conversation = require('../models/Conversation');
+
 router.post('/post', async (req, res) => {
   const {
     userId,
@@ -149,8 +151,10 @@ router.get('/personalDetails', async (req, res) => {
 
 router.post('/accepted', async (req, res) => {
   const { status, jobId, seekerId, providerId } = req.body;
-  console.log({ status, jobId, seekerId, providerId })
+  console.log({ status, jobId, seekerId, providerId });
+
   try {
+    // Update application status
     const response = await Applicationdb.findOneAndUpdate(
       { seekerId: seekerId, jobId: jobId, providerId: providerId }, // Find criteria
       { status: status }, // Update fields
@@ -161,7 +165,30 @@ router.post('/accepted', async (req, res) => {
       return res.status(404).json({ message: 'Application not found' });
     }
 
-    res.status(200).json({ message: 'Application updated successfully', data: response });
+    // Create a new conversation directly when the status is approved
+    if (status === 'approved') {
+      const conversation = new Conversation({
+        gigId: jobId,
+        seekerId: seekerId,
+        providerId: providerId,
+      });
+
+      await conversation.save(); // Save the new conversation
+
+      // Include the conversation ID in the response
+      return res.status(200).json({ 
+        message: 'Application approved successfully, chat feature activated', 
+        data: response, 
+        conversationId: conversation._id // Return the conversation ID
+      });
+    }
+
+    // If not approved, respond with the updated application status
+    res.status(200).json({ 
+      message: 'Application status updated successfully', 
+      data: response 
+    });
+
   } catch (error) {
     console.error('Error updating application:', error);
     res.status(500).json({ message: 'Internal server error' });

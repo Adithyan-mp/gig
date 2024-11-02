@@ -4,16 +4,16 @@ import {jwtDecode} from 'jwt-decode'; // Import jwtDecode to decode the token
 import GigCard from './GigCard';
 
 function GigHistorySection() {
+  const userId = localStorage.getItem('userId');
   const [gigData, setGigData] = useState([]);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const token = localStorage.getItem('authToken'); 
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          const userId = decodedToken.userid; 
-          
+        // const token = localStorage.getItem('authToken'); 
+        // const decodedToken = jwtDecode(token);
+        //   const userId = decodedToken.userid; 
+        if (userId) {
           const response = await axios.get(`/api/history`, { params: { userid: userId } });
           
           // Set the received data into the gigData state
