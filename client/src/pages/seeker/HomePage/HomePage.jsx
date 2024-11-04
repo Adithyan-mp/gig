@@ -1,18 +1,16 @@
 import React from 'react';
 import Header from './Header';
 import WelcomeSection from './WelcomeSection';
-import TopProviders from './TopProviders.jsx';
+import TopProviders from './TopProviders';
 
 function GigPlatform() {
   return (
     <div className="flex flex-col bg-gray-800">
       <Header />
-      <main className="flex flex-col items-end px-16 pt-32 pb-56  w-full bg-gray-800 max-md:px-5 max-md:py-24 max-md:mr-0 max-md:max-w-full">
-        <div className="mb-0 w-full max-w-[1474px] max-md:mb-2.5 max-md:max-w-full">
-          <div className="flex gap-5 max-md:flex-col">
-            <WelcomeSection />
-            <TopProviders />
-          </div>
+      <main className="flex flex-col items-center px-8 pt-16 pb-24 w-full bg-gray-800">
+        <div className="flex flex-col lg:flex-row gap-10 w-full max-w-6xl">
+          <WelcomeSection />
+          <TopProviders />
         </div>
       </main>
     </div>

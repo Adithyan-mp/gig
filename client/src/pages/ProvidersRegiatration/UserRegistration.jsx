@@ -81,7 +81,7 @@ function UserRegistration() {
         });
   
         // Navigate to 'GigPost' after successful registration
-        navigate('/GigPost');
+        navigate('/login');
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {

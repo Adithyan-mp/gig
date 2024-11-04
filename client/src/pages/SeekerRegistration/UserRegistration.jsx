@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import InputField from './InputField';
 import CheckboxField from './CheckboxField';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const inputFields = [
   { label: 'NAME', type: 'text', name: 'name' },
@@ -16,7 +16,7 @@ const inputFields = [
 ];
 
 function UserRegistration() {
-  const navigate = useNavigate(); // Create navigate instance
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -58,7 +58,7 @@ function UserRegistration() {
 
     try {
       const response = await axios.post('/api/userCreation', formData);
-      if (response.status === 200) {
+      if (response.status === 201) {
         setSuccess('Registration successful!');
         setFormData({
           name: '',
@@ -71,16 +71,12 @@ function UserRegistration() {
           confirmPassword: '',
           termsAccepted: false,
         });
-
-        // Redirect to Gig Pool page on success
-        navigate('/GigPool');
+        navigate('/login');
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Registration failed. Try again.');
-      }
+      // Extract specific error messages
+      const errorMessages = err.response?.data?.errors || [];
+      setError(errorMessages.length > 0 ? errorMessages.join(', ') : 'Registration failed. Try again.');
     }
   };
 

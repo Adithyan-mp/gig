@@ -1,47 +1,59 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 
 function EmailSignUp() {
   const [role, setRole] = useState("");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleRoleChange = (e) => {
     setRole(e.target.value);
+    setError(""); // Clear error when user changes role
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setError(""); // Clear error when user changes email
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
-    // Navigate based on the selected role
-    if (role === "seeker") {
-      navigate("/seekerRegistration"); // Navigate to seekerRegistration
-    } else if (role === "provider") {
-      navigate("/providerRegistration"); // Navigate to providerRegistration
-    } else {
-      alert("Please select a role."); // Alert if no role is selected
+    e.preventDefault();
+    if (!role) {
+      setError("Please select a role.");
+      return;
     }
+    if (!email) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setError("");
+    navigate(role === "seeker" ? "/seekerRegistration" : "/providerRegistration");
   };
 
   return (
-    <form className="flex flex-col mt-4 w-full text-sm leading-relaxed text-white" onSubmit={handleSubmit}>
+    <form className="flex flex-col mt-4 w-full text-sm text-white" onSubmit={handleSubmit}>
       <div className="flex flex-col justify-center w-full">
-        <div className="flex gap-1 items-center w-full bg-gray-800 rounded border border-solid border-slate-600 min-h-[56px]">
+        <div className="bg-gray-800 border border-slate-600 rounded h-[56px] w-full">
           <label htmlFor="email" className="sr-only">Enter your email</label>
           <input
             id="email"
             type="email"
-            className="flex-1 shrink gap-2 self-stretch px-1 my-auto w-full min-w-[240px] bg-transparent text-white h-[56px] px-4"
+            value={email}
+            onChange={handleEmailChange}
             placeholder="Enter your email"
+            className="w-full h-full bg-transparent text-white px-4"
+            required
           />
         </div>
-        {/* Role Selection */}
-        <div className="flex gap-1 items-center mt-2 w-full bg-gray-800 rounded border border-solid border-slate-600 min-h-[56px]">
+        <div className="mt-2 bg-gray-800 border border-slate-600 rounded h-[56px] w-full">
           <label htmlFor="role" className="sr-only">Select your role</label>
           <select
             id="role"
             value={role}
             onChange={handleRoleChange}
-            className="flex-1 shrink gap-2 self-stretch px-1 my-auto w-full min-w-[240px] bg-transparent text-white h-[56px] px-4"
+            className="w-full h-full bg-transparent text-white px-4"
+            required
           >
             <option value="" disabled>Select your role</option>
             <option value="seeker" className="text-black">Seeker</option>
@@ -49,12 +61,15 @@ function EmailSignUp() {
           </select>
         </div>
       </div>
-      <button type="submit" className="flex gap-1 justify-center items-center px-6 py-4 mt-2 w-full text-center bg-teal-600 rounded-lg max-md:px-5 hover:opacity-80">
-        <span className="flex-1 shrink gap-2 self-stretch px-1 my-auto w-full min-h-[22px] min-w-[240px]">
-          Sign up
-        </span>
+      {error && (
+        <p className="text-red-500 mt-2" aria-live="polite">
+          {error}
+        </p>
+      )}
+      <button type="submit" className="px-6 py-4 mt-2 w-full bg-teal-600 rounded-lg hover:opacity-80 text-center">
+        Sign up
       </button>
-      <Link to={'/login'} className="self-center mt-2 text-zinc-100 hover:opacity-80">
+      <Link to="/login" className="self-center mt-2 text-zinc-100 hover:opacity-80">
         Already have an account? Login
       </Link>
     </form>

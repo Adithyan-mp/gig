@@ -1,3 +1,4 @@
+// InputField.js
 import React from 'react';
 
 function InputField({ label, type, name, value, onChange }) {
@@ -9,9 +10,9 @@ function InputField({ label, type, name, value, onChange }) {
       <input
         id={id}
         type={type}
-        name={name} // Added name prop to identify the field
-        value={value} // Controlled input value
-        onChange={onChange} // Handle onChange event to update form data
+        name={name}
+        value={value}
+        onChange={onChange}
         className="flex grow shrink h-14 bg-white border border-black border-solid min-w-[240px] w-[518px] max-md:max-w-full"
         aria-label={label}
       />
