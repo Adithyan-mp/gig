@@ -48,8 +48,8 @@ function App() {
           <Route path='/yourgig/:id/:jobId' element={<PersonDetails/>}/>
           <Route path='/perfectcandidates/:id' element={<YourPerfectCandidates/>}/>
           <Route path='/perfectcandidates/:id/:jobId' element={<PerfectCandidatesDetails/>}/>
-          <Route path='/providerchat/:id' element={<ProviderChat/>}/>
-          <Route path='/seekerchat/:id' element={<SeekerChat/>}/>
+          <Route path='/providerchat/:id' element={<ProviderChat participantName="Seeker Name" senderType="provider"/>}/>
+          <Route path='/seekerchat/:id' element={<SeekerChat participantName="Provider Name" senderType="seeker"/>}/>
         </Routes>
       </BrowserRouter>
     </div>
