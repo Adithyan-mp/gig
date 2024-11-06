@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputField from './InputField'; // Reusable input component
 import CheckboxField from './CheckboxField'; // Reusable checkbox component
 import axios from 'axios'; // For making API requests
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const inputFields = [
   { label: 'NAME', type: 'text', name: 'name' },
@@ -19,6 +19,7 @@ const inputFields = [
 
 function UserRegistration() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,6 +35,16 @@ function UserRegistration() {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [token, setToken] = useState('');
+
+  // Extract token from the URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tokenFromUrl = params.get('token');
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    }
+  }, [location.search]);
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -44,44 +55,60 @@ function UserRegistration() {
     });
   };
 
+  // Function to verify token
+  const verifyToken = async (token) => {
+    try {
+      const response = await axios.post('/verify-token', { token });
+      return response.data.isValid;
+    } catch (error) {
+      console.error("Token verification error:", error);
+      return false;
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-  
+
     // Password match validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
-  
+
     try {
-      // Send form data to the backend using axios
-      const response = await axios.post('/api/providerCreation', formData);
-  
-      if (response.status === 201) {
-        const { token } = response.data; // Assuming the token is sent in the response
-        // Store the token in localStorage (or sessionStorage)
-        localStorage.setItem('authToken', token); // Storing token securely
-  
-        setSuccess('Registration successful!');
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          userId: '',
-          company: '',
-          industry: '',
-          location: '',
-          address: '',
-          phone: '',
-          password: '',
-          confirmPassword: ''
-        });
-  
-        // Navigate to 'GigPost' after successful registration
-        navigate('/GigPost');
+      // Verify the token from the URL
+      const isTokenValid = await verifyToken(token);
+      if (isTokenValid) {
+        // Proceed to create the provider
+        const response = await axios.post('/api/providerCreation', formData);
+
+        if (response.status === 201) {
+          // Token is valid, store the token
+          localStorage.setItem('authToken', token);
+          setSuccess('Registration successful!');
+
+          // Reset form fields
+          setFormData({
+            name: '',
+            email: '',
+            userId: '',
+            company: '',
+            industry: '',
+            location: '',
+            address: '',
+            phone: '',
+            password: '',
+            confirmPassword: ''
+          });
+
+          // Navigate to login page after successful registration
+          navigate('/login');
+        }
+      } else {
+        setError('Token verification failed. Please try registering again.');
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
@@ -91,7 +118,7 @@ function UserRegistration() {
       }
     }
   };
-  
+
   return (
     <main className="flex flex-col rounded-none bg-gray-800 min-h-screen">
       <header className="z-10 -mt-3 text-4xl font-semibold text-white max-md:max-w-full">

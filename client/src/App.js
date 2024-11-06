@@ -8,7 +8,7 @@ import GigJournal from "./pages/seeker/gigJournal/GigJournal"
 import GigTracker from "./pages/seeker/gigTracker/GigTracker"
 import ProviderRegistration from "./pages/ProvidersRegiatration/UserRegistration"
 import SeekerRegistration from "./pages/SeekerRegistration/UserRegistration"
-import UserRegistration from "./pages/ProviderRegistration/UserRegistration"
+// import UserRegistration from "./pages/ProviderRegistration/UserRegistration"
 import GigPost from "./pages/Providers/GigPost/GigPost"
 import GigList from './pages/Providers/YourGig/GigList';
 import SeekerProfile from "./pages/seeker/gigUserProfile/ProfilePage"
@@ -25,7 +25,7 @@ import PerfectCandidatesDetails from './pages/Providers/yourPerfectCandidates/Pe
 import ProviderChat from './pages/Providers/Chat/ChatPage.jsx'
 import SeekerChat from './pages/seeker/chat/ChatPage.jsx'
 
-axios.defaults.baseURL = process.env.AXIOS_URL || 'http://localhost:5001';
+axios.defaults.baseURL = process.env.AXIOS_URL || 'https://gig-fwbccfefc5e3aqhr.canadacentral-01.azurewebsites.net';
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
 
