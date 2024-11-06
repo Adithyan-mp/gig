@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 function EmailSignUp() {
   const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState("");
 
   const handleRoleChange = (e) => {
     setRole(e.target.value);
@@ -17,7 +18,7 @@ function EmailSignUp() {
     setError(""); // Clear error when user changes email
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!role) {
       setError("Please select a role.");
@@ -28,7 +29,25 @@ function EmailSignUp() {
       return;
     }
     setError("");
-    navigate(role === "seeker" ? "/seekerRegistration" : "/providerRegistration");
+    setSuccess(""); // Clear previous success message
+
+    // Send data to backend for email sending with Axios
+    try {
+      const response = await axios.post("/send-registration-email", {
+        email,
+        role,
+      });
+
+      if (response.data.success) {
+        setSuccess("Check your email for Registration.");
+        setEmail(""); // Clear email input after successful submission
+        setRole(""); // Reset role selection
+      } else {
+        setError("Failed to send email. Please try again.");
+      }
+    } catch (err) {
+      setError("Error sending email. Please try again.");
+    }
   };
 
   return (
@@ -64,6 +83,11 @@ function EmailSignUp() {
       {error && (
         <p className="text-red-500 mt-2" aria-live="polite">
           {error}
+        </p>
+      )}
+      {success && (
+        <p className="text-green-500 mt-2" aria-live="polite">
+          {success}
         </p>
       )}
       <button type="submit" className="px-6 py-4 mt-2 w-full bg-teal-600 rounded-lg hover:opacity-80 text-center">

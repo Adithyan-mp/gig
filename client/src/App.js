@@ -25,7 +25,7 @@ import PerfectCandidatesDetails from './pages/Providers/yourPerfectCandidates/Pe
 import ProviderChat from './pages/Providers/Chat/ChatPage.jsx'
 import SeekerChat from './pages/seeker/chat/ChatPage.jsx'
 
-axios.defaults.baseURL = process.env.AXIOS_URL || 'http://localhost:5001';
+axios.defaults.baseURL = process.env.AXIOS_URL || 'https://gig-fwbccfefc5e3aqhr.canadacentral-01.azurewebsites.net';
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputField from './InputField';
 import CheckboxField from './CheckboxField';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const inputFields = [
   { label: 'NAME', type: 'text', name: 'name' },
@@ -17,6 +17,7 @@ const inputFields = [
 
 function UserRegistration() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,6 +33,16 @@ function UserRegistration() {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [token, setToken] = useState('');
+
+  // Extract token from the URL when the component mounts
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tokenFromUrl = params.get('token');
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    }
+  }, [location.search]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,6 +50,16 @@ function UserRegistration() {
 
   const handleCheckboxChange = (e) => {
     setFormData({ ...formData, termsAccepted: e.target.checked });
+  };
+
+  const verifyToken = async (token) => {
+    try {
+      const response = await axios.post('/verify-token', { token });
+      return response.data.isValid;
+    } catch (error) {
+      console.error("Token verification error:", error);
+      return false;
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -53,6 +74,13 @@ function UserRegistration() {
 
     if (!formData.termsAccepted) {
       setError('You must agree to the terms.');
+      return;
+    }
+
+    // Verify the token before proceeding
+    const isTokenValid = await verifyToken(token);
+    if (!isTokenValid) {
+      setError('Token verification failed. Please try registering again.');
       return;
     }
 
@@ -74,7 +102,6 @@ function UserRegistration() {
         navigate('/login');
       }
     } catch (err) {
-      // Extract specific error messages
       const errorMessages = err.response?.data?.errors || [];
       setError(errorMessages.length > 0 ? errorMessages.join(', ') : 'Registration failed. Try again.');
     }
